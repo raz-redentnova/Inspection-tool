@@ -1,0 +1,77 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+*.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# VS Code/IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# PyCharm
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build, distribution, packaging
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# Test, coverage, profiling
+.coverage
+.tox/
+.nox/
+.cache/
+pytest_cache/
+coverage.xml
+
+# Logs
+*.log
+
+# Data and outputs
+pics/
+*.npy
+*.npz
+*.pkl
+
+# Streamlit, local config and state
+.streamlit/
+config.json
+
+# Reference images, model weights
+reference_*.npy
+
+# Media cache
+*.avi
+*.mp4
+*.mkv
+*.mov
+
+# Ignore output from Streamlit WebRTC (if you save any media)
+*.webm
+
+# User-specific files
+*.bak
+*.swp
+
+# Python interactive history
+python_history.txt

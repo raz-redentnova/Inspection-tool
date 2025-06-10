@@ -1,0 +1,23 @@
+<<<<<<< HEAD
+streamlit==1.35.0
+streamlit-webrtc
+opencv-python==4.5.5.64
+opencv-contrib-python==4.5.5.64
+matplotlib
+plotly
+numpy
+pillow
+=======
+streamlit==1.35.0
+streamlit-webrtc
+opencv-python==4.5.5.64
+opencv-contrib-python==4.5.5.64
+matplotlib
+plotly
+numpy
+pillow
+<<<<<<< HEAD
+>>>>>>> f5e81b6 (Initial commit)
+=======
+pandas
+>>>>>>> 45fe485 (req commit)
