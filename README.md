@@ -1,98 +1,107 @@
-# Streamlit Inspection System – Raspberry Pi 4 Installation Guide
+# Inspection-System
 
-## Prerequisites
+Computer-vision app for real‑time contour inspection, mirror detection, and live streaming
+built with **Streamlit + OpenCV**.  Designed for deployment on Raspberry Pi CM4 in full‑screen
+kiosk mode.
 
-- **Raspberry Pi 4** (Raspberry Pi OS recommended)
-- **Internet connection**
-- **Connected camera** (USB webcam or Pi camera module)
-- **Git** (optional, if cloning from a repo)
+---
 
-## 1. Clone or Copy the Project
+## 1 Prerequisites
 
-Copy all project files (`app.py`, `inspection/` folder, `requirements.txt`, `setup.sh`, `run.sh`)  
-or clone your repository (example):
+| Item              | Version / Notes                         |
+|-------------------|-----------------------------------------|
+| Raspberry Pi OS   | 64‑bit Bookworm (Lite or Desktop)       |
+| Python            | Pre‑installed; script makes a venv      |
+| Camera            | USB UVC **or** CSI (libcamera)          |
+| Display (optional)| HDMI monitor or Pi 7″ LCD               |
 
-```bash
-git clone https://your-repo-url.git ~/inspection-system
-cd ~/inspection-system
-```
+---
 
-## 2. Run Setup Script
-
-Make scripts executable and run setup:
+## 2 One‑Command Setup (recommended)
 
 ```bash
-chmod +x setup.sh run.sh
-./setup.sh
+curl -sSL https://raw.githubusercontent.com/<org>/inspection-system/main/setup_pi.sh | sudo bash
 ```
 
-- This will install all dependencies, set up a Python virtual environment, and install required libraries.
+The `setup_pi.sh` script performs **five automatic steps**:
 
-## 3. Start the App
+| Step | Action | What happens |
+|------|--------|--------------|
+| 1    | Install OS packages | `git`, `python3‑venv`, OpenCV libs, `chromium-browser`, v4l2 tools |
+| 2    | Clone / pull repo   | Into `/home/pi/inspection-system` |
+| 3    | Build Python venv   | `pip install -r requirements.txt` |
+| 4    | Deploy systemd units| `streamlit.service` (backend) + `chromium-kiosk.service` (frontend) |
+| 5    | Health checks       | Confirms camera + backend running |
+
+If all steps succeed the script shows:
+
+```
+Do you want to reboot now to launch kiosk mode? [y/N]
+```
+
+Choose **`y`** and on next boot the Pi opens Chromium full‑screen at
+`http://localhost:8501`, running the app automatically.
+
+---
+
+## 3 Manual Run (development)
 
 ```bash
-./run.sh
+git clone https://github.com/<org>/inspection-system.git
+cd inspection-system
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+streamlit run app.py --server.headless true
+# → open http://<pi-ip>:8501
 ```
 
-- The app will start on [http://localhost:8501](http://localhost:8501)
-- Access it from your Pi or any device on your network (replace `localhost` with your Pi's IP)
+Stop with `Ctrl‑C`.
 
-## 4. Using the App
+---
 
-- **Tab 1:** Upload images, test detection, set and save parameters.
-- **Tab 2:** Live camera stream, detection overlays, and real-time inspection metrics.
-- **Capture Frame:** Click to save the currently displayed ROI/overlay to the `pics/` folder.
-
-## 5. Troubleshooting
-
-- **Camera not detected:**  
-  Ensure the camera is connected and not in use by another application.  
-  Check browser permissions if using the web interface.
-
-- **"Could not start video source":**  
-  Make sure only one app accesses the camera. Allow camera in browser settings.
-
-- **Missing dependencies:**  
-  Rerun `./setup.sh` to reinstall.
-
-- **App not accessible from another computer:**  
-  Find your Pi’s IP (`hostname -I`), then open `http://<your-pi-ip>:8501` in a browser.
-
-## 6. Updating the App
-
-If you pull new code or change dependencies:
-
-```bash
-git pull
-./setup.sh
-```
-
-## 7. Tips
-
-- To autostart at boot or run in kiosk mode, see Raspberry Pi documentation or ask for a custom script.
-- For higher performance, keep camera resolutions low (e.g., 320x240 or 640x480).
-
-## 8. File Structure
+## 4 Directory Layout
 
 ```
 inspection-system/
-├── app.py
-├── setup.sh
-├── run.sh
-├── requirements.txt
-├── inspection/
-│   ├── processing.py
-│   ├── metrics.py
-│   ├── config_handler.py
-│   ├── image_acquisition.py
-│   ├── visualization.py
-│   └── ...
-├── pics/            # Saved snapshots
-└── ...
+ ├── app.py
+ ├── setup_pi.sh        # one-shot installer
+ ├── deploy.sh          # pull + restart helper
+ ├── requirements.txt
+ ├── inspection/        # app modules
+ └── pics/              # captured frames
 ```
 
-<<<<<<< HEAD
-**For any issues or support, contact [your maintainer/email here].**
-=======
-**For any issues or support, contact [your maintainer/email here].**
->>>>>>> 45fe485 (req commit)
+---
+
+## 5 Service control (after setup_pi.sh)
+
+| Command                                  | Description                        |
+|------------------------------------------|------------------------------------|
+| `sudo systemctl restart streamlit`       | restart backend only               |
+| `sudo systemctl restart chromium-kiosk`  | restart kiosk browser              |
+| `journalctl -u streamlit -f`             | live backend logs                  |
+| `v4l2-ctl --list-devices`                | list connected UVC cameras         |
+
+---
+
+## 6 Capture Frames
+
+Click **“Capture frame”** in the UI (left column).  
+Images save to `pics/capture_YYYYMMDD_HHMMSS.png`.
+
+---
+
+## 7 Updating the Application
+
+```bash
+cd ~/inspection-system
+git pull
+./deploy.sh          # reinstalls wheels & restarts services
+```
+
+`deploy.sh` is idempotent and does **not** require a reboot.
+
+---
+
+Happy inspecting!  Please open issues / PRs for improvements.
