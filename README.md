@@ -20,7 +20,7 @@ kiosk mode.
 ## 2 One‑Command Setup (recommended)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/<org>/inspection-system/main/setup_pi.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/<org>/inspection-tool/setup_pi.sh | sudo bash
 ```
 
 The `setup_pi.sh` script performs **five automatic steps**:
@@ -28,7 +28,7 @@ The `setup_pi.sh` script performs **five automatic steps**:
 | Step | Action | What happens |
 |------|--------|--------------|
 | 1    | Install OS packages | `git`, `python3‑venv`, OpenCV libs, `chromium-browser`, v4l2 tools |
-| 2    | Clone / pull repo   | Into `/home/pi/inspection-system` |
+| 2    | Clone / pull repo   | Into `/home/pi/inspection-tool` |
 | 3    | Build Python venv   | `pip install -r requirements.txt` |
 | 4    | Deploy systemd units| `streamlit.service` (backend) + `chromium-kiosk.service` (frontend) |
 | 5    | Health checks       | Confirms camera + backend running |
@@ -47,8 +47,8 @@ Choose **`y`** and on next boot the Pi opens Chromium full‑screen at
 ## 3 Manual Run (development)
 
 ```bash
-git clone https://github.com/<org>/inspection-system.git
-cd inspection-system
+git clone https://github.com/<org>/inspection-tool.git
+cd inspection-tool
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -63,7 +63,7 @@ Stop with `Ctrl‑C`.
 ## 4 Directory Layout
 
 ```
-inspection-system/
+inspection-tool/
  ├── app.py
  ├── setup_pi.sh        # one-shot installer
  ├── deploy.sh          # pull + restart helper
@@ -91,17 +91,3 @@ Click **“Capture frame”** in the UI (left column).
 Images save to `pics/capture_YYYYMMDD_HHMMSS.png`.
 
 ---
-
-## 7 Updating the Application
-
-```bash
-cd ~/inspection-system
-git pull
-./deploy.sh          # reinstalls wheels & restarts services
-```
-
-`deploy.sh` is idempotent and does **not** require a reboot.
-
----
-
-Happy inspecting!  Please open issues / PRs for improvements.

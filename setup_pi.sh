@@ -15,7 +15,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # ---------- USER-EDITABLE VARIABLES ---------------------------------------
-REPO_URL="https://github.com/<org>/inspection-system.git"
+REPO_URL="https://github.com/raz-redentnova/Inspection-tool.git"
 APP_DIR="/home/pi/inspection-system"
 PY_BIN="/usr/bin/python3"
 PORT="8501"
@@ -33,7 +33,7 @@ trap 'red "❌  ERROR in ${FUNCNAME:-main} (line $LINENO)."; exit 1' ERR
 [[ $EUID -ne 0 ]] && red "Please run with sudo." && exit 1
 
 #############################################################################
-cyan "Step 1/5  –  Installing OS packages"
+cyan "Step 1/5  Installing OS packages"
 #############################################################################
 apt-get update -qq
 apt-get install -y --no-install-recommends \
@@ -42,7 +42,7 @@ apt-get install -y --no-install-recommends \
 green "✓  APT packages installed"
 
 #############################################################################
-cyan "Step 2/5  –  Cloning or updating repository"
+cyan "Step 2/5  Cloning or updating repository"
 #############################################################################
 if [[ -d "$APP_DIR/.git" ]]; then
     git -C "$APP_DIR" pull --quiet
@@ -53,7 +53,7 @@ else
 fi
 
 #############################################################################
-cyan "Step 3/5  –  Python venv + requirements"
+cyan "Step 3/5  Python venv + requirements"
 #############################################################################
 cd "$APP_DIR"
 $PY_BIN -m venv .venv
@@ -63,7 +63,7 @@ pip install -q -r requirements.txt
 green "✓  Virtual environment ready"
 
 #############################################################################
-cyan "Step 4/5  –  Deploying systemd services"
+cyan "Step 4/5  Deploying systemd services"
 #############################################################################
 cat >/etc/systemd/system/streamlit.service <<EOF
 [Unit]
@@ -103,19 +103,19 @@ systemctl restart streamlit.service chromium-kiosk.service
 green "✓  streamlit & chromium-kiosk services enabled"
 
 #############################################################################
-cyan "Step 5/5  –  Quick health checks"
+cyan "Step 5/5  Quick health checks"
 #############################################################################
 # Camera check
 if v4l2-ctl --list-devices | grep -qE "video"; then
     green "✓  Camera detected"
 else
-    red   "⚠  Camera NOT detected – continuing (CSI cameras need libcamera)."
+    red   "⚠  Camera NOT detected continuing (CSI cameras need libcamera)."
 fi
 # Streamlit check
 if systemctl is-active --quiet streamlit; then
     green "✓  streamlit service running"
 else
-    red   "❌ streamlit failed – inspect with: journalctl -u streamlit -f"
+    red   "❌ streamlit failed inspect with: journalctl -u streamlit -f"
 fi
 
 clean_exit=true
